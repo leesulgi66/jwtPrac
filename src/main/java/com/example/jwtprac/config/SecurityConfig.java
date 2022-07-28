@@ -16,6 +16,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -41,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);  //시큐리티 보다 이전에 필터가 작동하게 설계
         http.csrf().disable();
+        http.cors().configurationSource(corsConfigurationSource()); //cors 권한 추가!
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 //STATELESS -> 세션을 사용하지 않겠다는 것
         .and()
@@ -56,5 +60,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and().headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
         ;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true) ;
+        configuration.addAllowedOriginPattern("");
+        configuration.addAllowedOrigin("프론트 주소"); // 배포 시
+        // 수정 필요
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Authorization");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
