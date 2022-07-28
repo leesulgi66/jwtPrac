@@ -3,7 +3,7 @@ package com.example.jwtprac.config.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.config.auth.PrincipalDetails;
-import com.example.jwtprac.model.User;
+import com.example.jwtprac.model.Member;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,9 +21,10 @@ import java.util.Date;
 //스프링 시큐리티에서 UsernamePasswordAuthenticationFilter 가 있음.
 // /login 요청해서 username, password 전송하면 (psot)
 //UsernamePasswordAuthenticationFilter 동작을 함.
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+
+    public FormLoginFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
@@ -36,12 +37,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         try {
             ObjectMapper om = new ObjectMapper();
-            User user = om.readValue(request.getInputStream(), User.class); //유저정보 담기
-            System.out.println(user);
+            Member member = om.readValue(request.getInputStream(), Member.class); //유저정보 담기
+            System.out.println(member);
             System.out.println("==============================================================");
 
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+                    new UsernamePasswordAuthenticationToken(member.getUsername(), member.getPassword());
 
             // 2. 정상인지 로그인 시도를 해보는 것. authenticationManager로 로그인 시도를 하면!!
             // PrincipalDetailsService가 호출 loadUserByUsername() 함수 실행됨.
@@ -52,7 +53,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             //authentication 객체가 session영역에 저장됨. => 로그인이 되었다는 뜻. 담는 이유는: 권한 관리를 위해!
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            System.out.println("로그인 완료됨:"+principalDetails.getUser().getUsername());
+            System.out.println("로그인 완료됨:"+principalDetails.getMember().getUsername());
 
             return authentication;
 
@@ -73,7 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String jwtToken = JWT.create()
                 .withSubject("cos토큰")
                 .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
-                .withClaim("id", principalDetails.getUser().getUsername())
+                .withClaim("id", principalDetails.getMember().getUsername())
                 .sign(Algorithm.HMAC512("cos"));
 
         response.addHeader("Authorization", "Bearer "+jwtToken);

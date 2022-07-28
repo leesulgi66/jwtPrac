@@ -1,6 +1,8 @@
 package com.example.jwtprac.config;
 
-import com.example.jwtprac.config.jwt.JwtAuthenticationFilter;
+import com.example.jwtprac.config.jwt.FormLoginFilter;
+import com.example.jwtprac.config.jwt.JwtAuthorizationFilter;
+import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.filter.CorsFilter;
 
@@ -20,6 +23,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
+    private final UserRepository userRepository;
 
     @Bean
     @Override // Bean 에 등록
@@ -43,23 +47,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(corsFilter) //@CrossOrigin(인증X), 시큐리티 필터에 등록 인증(O)
                 .formLogin().disable() //폼로그인 사용을 하지 않겠다는 것.
                 .httpBasic().disable() //기본방식 사용하지 않겠다는 것.
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())) //AuthenticationManager 넘겨야 하는 파라미터!
+                .addFilterBefore(new FormLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), userRepository), UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests()
-                .antMatchers("/api/v1/user/**")
-                .access("hasRol('ROLE_USER')or hasRol('ROLE_MANAGER') or hasRol('ROLE_ADMIN')")
-                .antMatchers("/api/v1/manager/**")
-                .access("hasRol('ROLE_MANAGER') or hasRol('ROLE_ADMIN')")
-                .antMatchers("/api/v1/admin/**")
-                .access("hasRol('ROLE_ADMIN')")
+                .antMatchers("/api/v1/user/**").permitAll()
                 .antMatchers("h2-console/**").permitAll()
                 .anyRequest().permitAll()
-                .and().headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN));
-
-
-
-
+                .and().headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+        ;
     }
-
-
 }
