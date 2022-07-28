@@ -73,6 +73,6 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .withClaim("username", userDetails.getMember().getUsername())
                 .sign(Algorithm.HMAC512("cos"));
 
-        response.addHeader("Authorization", jwtToken);
+        response.addHeader("Authorization", jwtToken); //헤더에 토큰을 추가
     }
 }

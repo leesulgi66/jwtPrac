@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,8 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("**").permitAll()
                 .antMatchers("/").authenticated()
-//                .antMatchers(HttpMethod.GET,"/api/contents").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/reply/**").permitAll()
+                //.antMatchers(HttpMethod.GET,"/api/contents").permitAll()  //GET 요청 허용
+                //.antMatchers(HttpMethod.GET, "/api/reply/**").permitAll()
 
                 // 그 외 모든 요청허용
                 .anyRequest().permitAll()
@@ -73,6 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), userRepository), UsernamePasswordAuthenticationFilter.class)
         ;
     }
+
+    //CORS를 위한 Bean 등록
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -81,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.addExposedHeader("Authorization");
-        configuration.setAllowCredentials(true) ;
+        configuration.setAllowCredentials(true) ;  //
         //  configuration.addAllowedOriginPattern("");
         // configuration.addAllowedOrigin("프론트 주소"); // 배포 시
 
