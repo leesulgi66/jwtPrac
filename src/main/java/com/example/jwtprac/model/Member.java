@@ -22,7 +22,6 @@ public class Member extends Timestamped {
     private String password;
     @Column(nullable = false, unique = true)
     private String nickname;
-
     @Column
     private String mbti;
 

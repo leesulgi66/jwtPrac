@@ -26,7 +26,7 @@ public class FormLoginProvider implements AuthenticationProvider {
         UserDetailsImpl userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
         if(passwordEncoder.matches(password, userDetails.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(userDetails, null);
+            return new UsernamePasswordAuthenticationToken(userDetails, null); //암호 부분은 null값
         }else {
             throw new BadCredentialsException("잘못된 로그인 정보입니다.");
         }
