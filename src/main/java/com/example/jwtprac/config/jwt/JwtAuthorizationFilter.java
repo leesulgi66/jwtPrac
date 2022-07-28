@@ -2,7 +2,7 @@ package com.example.jwtprac.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.jwtprac.config.auth.PrincipalDetails;
+import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,11 +34,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         System.out.println("인증이나 권한이 필요한 주소 요청이 됨");
 
+        //해더에서 추출
         String jwtHeader = request.getHeader("Authorization");
         System.out.println("jwtHeader: "+ jwtHeader);
 
         //header가 있는지 확인
-        if(jwtHeader == null || !jwtHeader.startsWith("")) {
+        if(jwtHeader == null) {
             chain.doFilter(request, response);
             return;
         }
@@ -51,14 +52,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         //서명이 정상적으로 됨.
         if(username != null) {
-            Member memberEntity = userRepository.findByUsername(username);
+            Member memberEntity = userRepository.findByUsername(username).orElseThrow(
+                    ()-> new IllegalArgumentException("username이 없습니다.")
+            );
 
-            PrincipalDetails principalDetails = new PrincipalDetails(memberEntity);
+            UserDetailsImpl userDetails = new UserDetailsImpl(memberEntity);
 
             //Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.
             Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(principalDetails, null,principalDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities());
 
+            //홀더에 값 넣어주는 것.
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             chain.doFilter(request, response);

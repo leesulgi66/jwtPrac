@@ -8,25 +8,30 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // 스프링 Security 지원을 가능하게 함
+@EnableGlobalMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CorsFilter corsFilter;
     private final UserRepository userRepository;
+
+    @Bean   // 비밀번호 암호화
+    public BCryptPasswordEncoder encodePassword() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     @Override // Bean 에 등록
@@ -42,26 +47,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);  //시큐리티 보다 이전에 필터가 작동하게 설계
         http.csrf().disable();
-        http.cors().configurationSource(corsConfigurationSource()); //cors 권한 추가!
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                //STATELESS -> 세션을 사용하지 않겠다는 것
-        .and()
-                .addFilter(corsFilter) //@CrossOrigin(인증X), 시큐리티 필터에 등록 인증(O)
-                .formLogin().disable() //폼로그인 사용을 하지 않겠다는 것.
-                .httpBasic().disable() //기본방식 사용하지 않겠다는 것.
+        http.cors().configurationSource(corsConfigurationSource());
+        http.headers().frameOptions().disable();
+        http.authorizeRequests()
+
+                // api 요청 접근허용
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("**").permitAll()
+                .antMatchers("/").authenticated()
+//                .antMatchers(HttpMethod.GET,"/api/contents").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/reply/**").permitAll()
+
+                // 그 외 모든 요청허용
+                .anyRequest().permitAll()
+                .and()
+                // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+
                 .addFilterBefore(new FormLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), userRepository), UsernamePasswordAuthenticationFilter.class)
-
-                .authorizeRequests()
-                .antMatchers("/api/v1/user/**").permitAll()
-                .antMatchers("h2-console/**").permitAll()
-                .anyRequest().permitAll()
-                .and().headers().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
         ;
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

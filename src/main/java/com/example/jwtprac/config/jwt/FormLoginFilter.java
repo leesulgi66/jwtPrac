@@ -2,7 +2,7 @@ package com.example.jwtprac.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.jwtprac.config.auth.PrincipalDetails;
+import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.model.Member;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,10 +51,6 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authentication =
                     getAuthenticationManager().authenticate(authenticationToken);
 
-            //authentication 객체가 session영역에 저장됨. => 로그인이 되었다는 뜻. 담는 이유는: 권한 관리를 위해!
-            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            System.out.println("로그인 완료됨:"+principalDetails.getMember().getUsername());
-
             return authentication;
 
         } catch (IOException e) {
@@ -68,15 +64,15 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         System.out.println("successfulAuthentication 실행됨: 인증이 완료되었다는 뜻.");
-        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
 
         //RSA방식은 아니고 Hash암호 방식
         String jwtToken = JWT.create()
                 .withSubject("cos토큰")
                 .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
-                .withClaim("id", principalDetails.getMember().getUsername())
+                .withClaim("username", userDetails.getMember().getUsername())
                 .sign(Algorithm.HMAC512("cos"));
 
-        response.addHeader("Authorization", "Bearer "+jwtToken);
+        response.addHeader("Authorization", jwtToken);
     }
 }

@@ -1,13 +1,13 @@
 package com.example.jwtprac.config.jwt;
 
-import com.example.jwtprac.config.auth.PrincipalDetailsService;
+import com.example.jwtprac.config.auth.UserDetailsImpl;
+import com.example.jwtprac.config.auth.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FormLoginProvider implements AuthenticationProvider {
 
-    private final PrincipalDetailsService principalDetailsService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -23,7 +23,7 @@ public class FormLoginProvider implements AuthenticationProvider {
         String username = (String)authentication.getPrincipal();
         String password = (String)authentication.getCredentials();
 
-        UserDetails userDetails = principalDetailsService.loadUserByUsername(username);
+        UserDetailsImpl userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
         if(passwordEncoder.matches(password, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(userDetails, null);
