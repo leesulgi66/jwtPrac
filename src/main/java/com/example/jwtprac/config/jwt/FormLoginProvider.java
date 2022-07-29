@@ -29,7 +29,7 @@ public class FormLoginProvider implements AuthenticationProvider {
         if(passwordEncoder.matches(password, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(userDetails, null); //이미 인증이 끝났으므로 비밀번호 부분은 삭제한다.
         }else {
-            throw new BadCredentialsException("잘못된 로그인 정보입니다.");
+            throw new BadCredentialsException("잘못된 로그인 정보입니다."); //인증 실패
         }
     }
 

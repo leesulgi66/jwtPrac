@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 //시큐리티가 filter 가지고 있는데 그 필터중에 BasicAuthenticationFilter 라는 것이 있음.
-//권한이나 인증이 필요한 특정 주소를 요청했을 때 위 필터를 무조건 타게 되어있음.
+//권한이나 인증이 필요한 특정 주소를 요청했을 때 위 필터를 무조건 타게 되어있음.!!!!!!
 //만약 권한이나 인증이 필요한 주소가 아니라면 이 필터를 안탐.
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -36,7 +36,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         //해더에서 추출
         String jwtHeader = request.getHeader("Authorization");
-        System.out.println("jwtHeader: "+ jwtHeader);
+        System.out.println("jwtHeader: "+ jwtHeader); //토큰값 확인
 
         //header가 있는지 확인
         if(jwtHeader == null) {
@@ -48,7 +48,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtToken = request.getHeader("Authorization");
 
         String username =
-                JWT.require(Algorithm.HMAC512("dltmfrl6")).build().verify(jwtToken).getClaim("username").asString();
+                JWT.require(Algorithm.HMAC512("6dltmfrl")).build().verify(jwtToken).getClaim("username").asString();
 
         //서명이 정상적으로 됨.
         if(username != null) {
