@@ -48,7 +48,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtToken = request.getHeader("Authorization");
 
         String username =
-                JWT.require(Algorithm.HMAC512("cos")).build().verify(jwtToken).getClaim("username").asString();
+                JWT.require(Algorithm.HMAC512("dltmfrl6")).build().verify(jwtToken).getClaim("username").asString();
 
         //서명이 정상적으로 됨.
         if(username != null) {
@@ -62,7 +62,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities());
 
-            //홀더에 값 넣어주는 것.
+            //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal UserDetailsImpl userDetails 로 정보를 꺼낼 수 있다.
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             chain.doFilter(request, response);

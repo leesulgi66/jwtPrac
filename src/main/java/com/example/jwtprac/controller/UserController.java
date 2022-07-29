@@ -43,7 +43,7 @@ public class UserController {
 
     //로그인 유저 정보
     @GetMapping("user/login/auth")
-    public Member userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public LoginIdCheckDto userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);
     }
 }

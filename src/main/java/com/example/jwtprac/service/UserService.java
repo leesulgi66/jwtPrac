@@ -61,10 +61,10 @@ public class UserService {
     }
 
     //로그인 유저 정보 반환
-    public Member userInfo(UserDetailsImpl userDetails) {
+    public LoginIdCheckDto userInfo(UserDetailsImpl userDetails) {
         String username = userDetails.getUsername();
         String usernickname = userDetails.getMember().getNickname();
-        Member userinfo = new Member(username, usernickname);
+        LoginIdCheckDto userinfo = new LoginIdCheckDto(username, usernickname);
         return userinfo;
     }
 

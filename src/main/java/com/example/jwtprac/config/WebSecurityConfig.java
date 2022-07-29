@@ -1,13 +1,13 @@
 package com.example.jwtprac.config;
 
 import com.example.jwtprac.config.jwt.FormLoginFilter;
+import com.example.jwtprac.config.jwt.FormLoginProvider;
 import com.example.jwtprac.config.jwt.JwtAuthorizationFilter;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +29,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final FormLoginProvider formLoginProvider;
     private final UserRepository userRepository;
 
     @Bean   // 비밀번호 암호화
@@ -75,6 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
+
     //CORS를 위한 Bean 등록
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -92,4 +94,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
+
+
 }
