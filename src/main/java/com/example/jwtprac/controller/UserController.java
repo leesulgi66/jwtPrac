@@ -3,7 +3,6 @@ package com.example.jwtprac.controller;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
-import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

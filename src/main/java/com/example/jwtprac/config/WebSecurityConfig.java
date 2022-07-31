@@ -65,8 +65,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(HttpMethod.GET, "/api/reply/**").permitAll()
 
                 // 그 외 모든 요청허용
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
                 .and()
+                .formLogin().disable()
                 // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
