@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.cors();
-        http.headers().frameOptions().disable();
+        http.headers().frameOptions().disable(); //h2-console 보기
         http.authorizeRequests()
 
                 // api 요청 접근허용
@@ -64,14 +64,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(HttpMethod.GET,"/api/contents").permitAll()  //GET 요청 허용
                 //.antMatchers(HttpMethod.GET, "/api/reply/**").permitAll()
 
-                // 그 외 모든 요청허용
+                // 그 외 모든 요청권한
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
                 // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-
                 .addFilterBefore(new FormLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), userRepository), UsernamePasswordAuthenticationFilter.class)
         ;
