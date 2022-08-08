@@ -10,6 +10,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         //CORS 설정을 위함.
         registry.addMapping("/**")
-                .allowedOrigins("");
+                .allowedOrigins("*");
     }
 }

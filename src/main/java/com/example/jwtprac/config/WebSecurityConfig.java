@@ -52,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.cors();
+        http.cors().configurationSource(corsConfigurationSource());
         http.headers().frameOptions().disable(); //h2-console 보기
         http.authorizeRequests()
 
@@ -82,11 +82,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 수정 필요
+        configuration.addAllowedOrigin("http://weibo-clone.s3-website.ap-northeast-2.amazonaws.com");
         configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");
-        configuration.setAllowCredentials(true) ;  //
+        configuration.setAllowCredentials(true);  //
         //  configuration.addAllowedOriginPattern("");
         // configuration.addAllowedOrigin("프론트 주소"); // 배포 시
 
