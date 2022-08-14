@@ -67,7 +67,7 @@ public class KakaoService {
     }
 
     //카카오 사용자 로그인요청
-    public Boolean RequestKakao(String code, HttpServletResponse response) {
+    public Boolean requestKakao(String code, HttpServletResponse response) {
         //REstTemplate을 이용해 POST방식으로 Key=value 데이터를 요청 (카카오쪽으로)
         RestTemplate rt = new RestTemplate();
 

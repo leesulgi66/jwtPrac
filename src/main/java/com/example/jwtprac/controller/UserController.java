@@ -2,8 +2,8 @@ package com.example.jwtprac.controller;
 
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
-import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.model.Member;
+import com.example.jwtprac.service.KakaoService;
 import com.example.jwtprac.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,10 +34,10 @@ public class UserController {
     //카카오 소셜 로그인
     @GetMapping("/auth/kakao/callback")
     public @ResponseBody boolean kakaoCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
-        return kakaoService.RequestKakao(code, response);
+        return kakaoService.requestKakao(code, response);
     }
 
-    //로그인 유저 정보 확인(username, nickname)
+    //로그인 유저 정보
     @GetMapping("user/login/auth")
     public LoginIdCheckDto userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);
