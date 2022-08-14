@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import java.io.IOException;
 //시큐리티가 filter 가지고 있는데 그 필터중에 BasicAuthenticationFilter 라는 것이 있음.
 //권한이나 인증이 필요한 특정 주소를 요청했을 때 위 필터를 무조건 타게 되어있음.!!!!!!
 //만약 권한이나 인증이 필요한 주소가 아니라면 이 필터를 안탐.
+
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
@@ -28,11 +30,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         super(authenticationManager);
         this.userRepository = userRepository;
     }
+
+    @Value("${secret.key}")
+    private String secretKey;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        System.out.println("인증이나 권한이 필요한 주소 요청이 됨");
+        System.out.println("요청이 들어옴");
 
         //해더에서 추출
         String jwtHeader = request.getHeader("Authorization");
@@ -61,7 +67,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             //Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities());
-
             //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal UserDetailsImpl userDetails 로 정보를 꺼낼 수 있다.
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

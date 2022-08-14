@@ -3,23 +3,26 @@ package com.example.jwtprac.controller;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
+import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+//@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
+    private final KakaoService kakaoService;
 
     // 회원 가입 요청 처리
     @PostMapping("/user/signup")
-    public String registerUser(@Valid @RequestBody SignupRequestDto requestDto) {
+    public String registerUser(@Valid @RequestBody Member requestDto) {
         String res = userService.registerUser(requestDto);
         if (res.equals("")) {
             return "회원가입 성공";
@@ -28,19 +31,13 @@ public class UserController {
         }
     }
 
-    //아이디 중복 체크
-    @GetMapping("user/login/userIds")
-    public String idCheck(@RequestBody LoginIdCheckDto loginIdCheckDto){
-        return userService.userIdCheck(loginIdCheckDto);
+    //카카오 소셜 로그인
+    @GetMapping("/auth/kakao/callback")
+    public @ResponseBody boolean kakaoCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
+        return kakaoService.RequestKakao(code, response);
     }
 
-    //닉네임 중복 체크
-    @GetMapping("user/login/nickNames")
-    public String nicNAmeCheck(@RequestBody LoginIdCheckDto loginIdCheckDto){
-        return userService.userNicNameCheck(loginIdCheckDto);
-    }
-
-    //로그인 유저 정보
+    //로그인 유저 정보 확인(username, nickname)
     @GetMapping("user/login/auth")
     public LoginIdCheckDto userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);

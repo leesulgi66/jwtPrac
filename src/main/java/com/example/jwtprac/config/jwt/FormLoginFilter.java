@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,9 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
     public FormLoginFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
+
+    @Value("${secret.key}")
+    private String secretKey;
 
     // /login 요청을 하면 로그인 시도를 위해서 함수 실행
     @Override

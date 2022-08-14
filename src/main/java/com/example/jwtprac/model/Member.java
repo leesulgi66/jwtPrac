@@ -18,24 +18,34 @@ public class Member extends Timestamped {
 
     @Column(nullable = false, unique = true)
     private String username;
-    @Column(nullable = false)
+    @Column
     private String password;
-    @Column(nullable = false, unique = true)
+    @Column
+    private String passwordCheck;
+    @Column
     private String nickname;
     @Column
-    private String mbti;
+    private String userProfile;
+    @Column
+    private String oauth;
 
-    //@ColumnDfalt("'user'")
-    //private String role; Enum - admin, user, manager 역할 입력해보기
-
-    public Member(String username, String password, String nickname) {
+    public Member(String username, String password, String userProfile, String oauth, String nickname) {
         this.username = username;
         this.password = password;
+        this.userProfile = userProfile;
+        this.oauth = oauth;
         this.nickname = nickname;
     }
 
     public Member(String username, String usernickname) {
         this.username = username;
         this.nickname = usernickname;
+    }
+
+    public Member(String username, String password, String profileImage, String oauth) {
+        this.username = username;
+        this.password = password;
+        this.userProfile = profileImage;
+        this.oauth = oauth;
     }
 }
