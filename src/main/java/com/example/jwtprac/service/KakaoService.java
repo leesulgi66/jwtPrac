@@ -115,8 +115,8 @@ public class KakaoService {
 
         //User 오브젝트 : username, password
         System.out.println("카카오 닉네임 : " + kakaoProfile.getProperties().getNickname());
-        System.out.println("카카오 아이디(번호)" + kakaoProfile.getId());
-        System.out.println("카카오 프로필 사진" + kakaoProfile.getProperties().getProfile_image());
+        System.out.println("카카오 아이디(번호) : " + kakaoProfile.getId());
+        System.out.println("카카오 프로필 사진 : " + kakaoProfile.getProperties().getProfile_image());
         System.out.println("클라이언트 서버 유저네임 : " + "Kakaoname" + kakaoProfile.getId());
 
         Member kakaoMember = Member.builder()
