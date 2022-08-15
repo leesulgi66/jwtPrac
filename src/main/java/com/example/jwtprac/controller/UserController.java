@@ -2,6 +2,7 @@ package com.example.jwtprac.controller;
 
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
+import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.KakaoService;
 import com.example.jwtprac.service.UserService;
@@ -22,7 +23,7 @@ public class UserController {
 
     // 회원 가입 요청 처리
     @PostMapping("/user/signup")
-    public String registerUser(@Valid @RequestBody Member requestDto) {
+    public String registerUser(@Valid @RequestBody SignupRequestDto requestDto) {
         String res = userService.registerUser(requestDto);
         if (res.equals("")) {
             return "회원가입 성공";

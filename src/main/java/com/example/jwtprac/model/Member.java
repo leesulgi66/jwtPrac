@@ -18,34 +18,29 @@ public class Member extends Timestamped {
 
     @Column(nullable = false, unique = true)
     private String username;
-    @Column
+    @Column(nullable = false)
     private String password;
-    @Column
-    private String passwordCheck;
     @Column
     private String nickname;
     @Column
     private String userProfile;
     @Column
     private String oauth;
+    @Column
+    private String kakaoNickname;
 
-    public Member(String username, String password, String userProfile, String oauth, String nickname) {
+    public Member(String username, String password, String userProfile, String oauth, String kakaoNickname) {
         this.username = username;
         this.password = password;
         this.userProfile = userProfile;
         this.oauth = oauth;
-        this.nickname = nickname;
+        this.kakaoNickname = kakaoNickname;
     }
 
-    public Member(String username, String usernickname) {
-        this.username = username;
-        this.nickname = usernickname;
-    }
-
-    public Member(String username, String password, String profileImage, String oauth) {
+    public Member(String username, String password, String userProfile, String nickname) {
         this.username = username;
         this.password = password;
-        this.userProfile = profileImage;
-        this.oauth = oauth;
+        this.userProfile = userProfile;
+        this.nickname = nickname;
     }
 }

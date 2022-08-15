@@ -35,36 +35,11 @@ public class KakaoService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Value("${secret.key}")
     private String secretKey;
 
-
-    //회원찾기
-    @Transactional(readOnly = true)
-    public Member findByUser(String username) {
-        Member member = userRepository.findByUsername(username).orElseGet(
-                ()-> {return new Member();}
-        );
-        return member;
-    }
-
-    //신규 카카오 회원가입
-    public String SignupKakaoUser(Member kakaoMember) {
-        String error = "";
-        String username = kakaoMember.getUsername();
-        String password = kakaoMember.getPassword();
-        String profileImage = kakaoMember.getUserProfile();
-        String oauth = kakaoMember.getOauth();
-
-        // 패스워드 인코딩
-        password = passwordEncoder.encode(password);
-        kakaoMember.setPassword(password);
-
-        Member member = new Member(username, password, profileImage, oauth);
-        userRepository.save(member);
-        return error;
-    }
 
     //카카오 사용자 로그인요청
     public Boolean requestKakao(String code, HttpServletResponse response) {
@@ -121,6 +96,7 @@ public class KakaoService {
                 new HttpEntity<>(headers2); //아래의 exchange가 HttpEntity 오브젝트를 받게 되어있다.
 
         //Http요청하기 - Post방식으로 - 그리고 responseEntity 변수의 응답 받음.
+        //사용자 정보를 post로 요청함
         ResponseEntity<String> response2 = rt2.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
@@ -138,11 +114,13 @@ public class KakaoService {
         }
 
         //User 오브젝트 : username, password
+        System.out.println("카카오 닉네임 : " + kakaoProfile.getProperties().getNickname());
         System.out.println("카카오 아이디(번호)" + kakaoProfile.getId());
         System.out.println("카카오 프로필 사진" + kakaoProfile.getProperties().getProfile_image());
         System.out.println("클라이언트 서버 유저네임 : " + "Kakaoname" + kakaoProfile.getId());
 
         Member kakaoMember = Member.builder()
+                .kakaoNickname(kakaoProfile.getProperties().getNickname())
                 .username("Kakaoname" + kakaoProfile.getId())
                 .password(kakaoProfile.getId().toString()) //임시 비밀번호
                 .userProfile(kakaoProfile.getProperties().getProfile_image())
@@ -180,5 +158,32 @@ public class KakaoService {
             System.out.println("JWT토큰 : " + jwtToken);
         }
         return true;
+    }
+
+    //신규 카카오 회원가입
+    public String SignupKakaoUser(Member kakaoMember) {
+        String error = "";
+        String username = kakaoMember.getUsername();
+        String password = kakaoMember.getPassword();
+        String profileImage = kakaoMember.getUserProfile();
+        String kakaoNickname = kakaoMember.getKakaoNickname();
+        String oauth = kakaoMember.getOauth();
+
+        // 패스워드 인코딩
+        password = passwordEncoder.encode(password);
+        kakaoMember.setPassword(password);
+
+        Member member = new Member(username, password, profileImage, oauth, kakaoNickname);
+        userRepository.save(member);
+        return error;
+    }
+
+    //회원찾기
+    @Transactional(readOnly = true)
+    public Member findByUser(String username) {
+        Member member = userRepository.findByUsername(username).orElseGet(
+                ()-> {return new Member();}
+        );
+        return member;
     }
 }

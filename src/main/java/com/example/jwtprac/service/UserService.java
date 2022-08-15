@@ -2,12 +2,12 @@ package com.example.jwtprac.service;
 
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
+import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -19,17 +19,17 @@ public class UserService {
     private final UserRepository userRepository;
 
     //회원찾기
-    @Transactional(readOnly = true)
-    public Member findByUser(String username) {
-        Member member = userRepository.findByUsername(username).orElseGet(
-                ()-> {return new Member();}
-        );
-        return member;
-    }
+//    @Transactional(readOnly = true)
+//    public Member findByUser(String username) {
+//        Member member = userRepository.findByUsername(username).orElseGet(
+//                ()-> {return new Member();}
+//        );
+//        return member;
+//    }
 
 
     // 회원가입
-    public String registerUser(Member requestDto) {
+    public String registerUser(SignupRequestDto requestDto) {
         String error = "";
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
@@ -75,7 +75,7 @@ public class UserService {
         requestDto.setPassword(password);
 
         // 유저 정보 저장
-        Member member = new Member(username, password, profileImage, oauth, nickname);
+        Member member = new Member(username, password, profileImage, nickname);
         userRepository.save(member);
         return error;
     }

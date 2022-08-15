@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.annotation.Generated;
 
 @Data
-@Generated("jsonschema2pojo")
+
 public class  KakaoProfile {
     public Long id;
     public String connected_at;
