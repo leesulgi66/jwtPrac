@@ -3,7 +3,6 @@ package com.example.jwtprac.controller;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
-import com.example.jwtprac.dto.SocialSignupRequestDto;
 import com.example.jwtprac.service.KakaoService;
 import com.example.jwtprac.service.S3Uploader;
 import com.example.jwtprac.service.UserService;
@@ -25,7 +24,6 @@ public class UserController {
     private final KakaoService kakaoService;
     private final S3Uploader s3Uploader;
 
-    //S3 Test controller
     @PostMapping("/upload")
     @ResponseBody
     public String upload(@RequestParam("data") MultipartFile multipartFile) throws IOException {
@@ -36,17 +34,6 @@ public class UserController {
     @PostMapping("/api/user/signup")
     public String registerUser(@Valid @RequestBody SignupRequestDto requestDto) throws IOException {
         String res = userService.registerUser(requestDto);
-        if (res.equals("")) {
-            return "회원가입 성공";
-        } else {
-            return res;
-        }
-    }
-
-    // 소셜 회원 가입 요청 처리
-    @PostMapping("/api/user/register")
-    public String registerSocialUser(@Valid @ModelAttribute SocialSignupRequestDto requestDto) throws IOException {
-        String res = userService.registerSocialUser(requestDto);
         if (res.equals("")) {
             return "회원가입 성공";
         } else {

@@ -5,13 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
-import com.example.jwtprac.dto.SocialSignupRequestDto;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
@@ -25,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
-    //일반 사용자 회원가입
+    // 회원가입
     public String registerUser(SignupRequestDto requestDto) throws IOException {
         String error = "";
         String username = requestDto.getUsername();
@@ -88,59 +86,6 @@ public class UserService {
 
         return error;
     }
-
-    //소셜 사용자 회원가입
-    public String registerSocialUser(SocialSignupRequestDto requestDto) throws IOException {
-        String error = "";
-        String username = requestDto.getUsername();
-        String password = requestDto.getUsername()+"1234";
-        String profileImage = requestDto.getUserProfile();
-        MultipartFile setProfileImage = requestDto.getUserProfileImage();
-        String nickname = requestDto.getNickname();
-        String age = requestDto.getAge();
-        String gender = requestDto.getGender();
-        String address = requestDto.getAddress();
-        String pattern = "^[a-zA-Z0-9]*$";
-
-        System.out.println(username);
-        System.out.println(nickname);
-        System.out.println(age);
-        System.out.println(gender);
-        System.out.println(address);
-
-
-        //닉네임 중복 체크
-        Optional<String> founds = userRepository.findByNickname(nickname);
-        if (founds.isPresent()) {
-            return "중복된 nickname 입니다.";
-        }
-
-        // 회원가입 조건
-        if (nickname.length() <= 2 || nickname.length() >= 6) {
-            return "아이디를 3-6자 이상 입력하세요";
-        }
-//        else if (!Pattern.matches(pattern, nickname)) {
-//            return "알파벳 대소문자와 숫자로만 입력하세요";
-//        }
-
-        // 패스워드 인코딩
-        password = passwordEncoder.encode(password);
-        requestDto.setPassword(password);
-
-        // 유저 정보 저장
-        Member member = new Member(username, password, profileImage, nickname, age, gender, address);
-
-        // 프로필 이미지 추가
-        if (setProfileImage != null) {
-            String profileUrl = s3Uploader.upload(requestDto.getUserProfileImage(), "profile");
-            member.setProfileImage(profileUrl);
-        }
-
-        userRepository.save(member);
-
-        return error;
-    }
-
 
     //로그인 유저 정보 반환
     public LoginIdCheckDto userInfo(UserDetailsImpl userDetails) {
