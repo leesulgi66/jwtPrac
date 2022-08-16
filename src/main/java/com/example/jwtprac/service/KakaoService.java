@@ -123,7 +123,7 @@ public class KakaoService {
                 .kakaoNickname(kakaoProfile.getProperties().getNickname())
                 .username("Kakaoname" + kakaoProfile.getId())
                 .password(kakaoProfile.getId().toString()) //임시 비밀번호
-                .userProfile(kakaoProfile.getProperties().getProfile_image())
+                .profileImage(kakaoProfile.getProperties().getProfile_image())
                 .oauth("kakao")
                 .build();
 
@@ -155,7 +155,7 @@ public class KakaoService {
                     .sign(Algorithm.HMAC512(secretKey));
 
             response.addHeader("Authorization", jwtToken);
-            System.out.println("JWT토큰 : " + jwtToken);
+            System.out.println("JWT토큰 : " + "Bearer "+jwtToken);
         }
         return true;
     }
@@ -165,7 +165,7 @@ public class KakaoService {
         String error = "";
         String username = kakaoMember.getUsername();
         String password = kakaoMember.getPassword();
-        String profileImage = kakaoMember.getUserProfile();
+        String profileImage = kakaoMember.getProfileImage();
         String kakaoNickname = kakaoMember.getKakaoNickname();
         String oauth = kakaoMember.getOauth();
 
