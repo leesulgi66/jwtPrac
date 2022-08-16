@@ -1,7 +1,5 @@
 package com.example.jwtprac.service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.model.KakaoProfile;
 import com.example.jwtprac.model.Member;
@@ -26,7 +24,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -157,7 +154,7 @@ public class KakaoService {
         return true;
     }
 
-    //신규 카카오 회원가입
+    //신규 카카오 강제 회원가입
     public String SignupKakaoUser(Member kakaoMember) {
         String error = "";
         String username = kakaoMember.getUsername();
