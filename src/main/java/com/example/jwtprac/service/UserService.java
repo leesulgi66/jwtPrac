@@ -1,5 +1,7 @@
 package com.example.jwtprac.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -90,5 +93,15 @@ public class UserService {
         String usernickname = userDetails.getMember().getNickname();
         LoginIdCheckDto userinfo = new LoginIdCheckDto(username, usernickname);
         return userinfo;
+    }
+
+    //토큰 발급
+    public String JwtTokenCreate(String username){
+        String jwtToken = JWT.create()
+                .withSubject("cos토큰")
+                .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
+                .withClaim("username", username)
+                .sign(Algorithm.HMAC512("6dltmfrl"));
+        return jwtToken;
     }
 }
