@@ -1,7 +1,7 @@
 package com.example.jwtprac;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -13,8 +13,14 @@ public class JwtPracApplication {
         return new BCryptPasswordEncoder();
     }
 
+    public static final String APPLICATION_LOCATIONS = "spring.config.location="
+            + "classpath:application-aws.yml,"
+            + "classpath:application.yml";
+
     public static void main(String[] args) {
-        SpringApplication.run(JwtPracApplication.class, args);
+        new SpringApplicationBuilder(JwtPracApplication.class)
+                .properties(APPLICATION_LOCATIONS)
+                .run(args);
     }
 
 }

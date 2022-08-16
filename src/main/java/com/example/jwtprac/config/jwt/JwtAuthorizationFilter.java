@@ -37,21 +37,18 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-
-        System.out.println("요청이 들어옴");
-
-        //해더에서 추출
-        String jwtHeader = request.getHeader("Authorization");
-        System.out.println("jwtHeader: "+ jwtHeader); //토큰값 확인
-
-        //header가 있는지 확인
-        if(jwtHeader == null) {
+        //헤더 확인
+        String header = request.getHeader("Authorization");
+        if(header == null || !header.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
 
         //JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
-        String jwtToken = request.getHeader("Authorization");
+        String jwtToken = request.getHeader("Authorization")
+                .replace("Bearer ", "");
+
+        System.out.println("header : "+header);
 
         String username =
                 JWT.require(Algorithm.HMAC512("6dltmfrl")).build().verify(jwtToken).getClaim("username").asString();

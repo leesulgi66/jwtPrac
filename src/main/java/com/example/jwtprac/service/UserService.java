@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -17,29 +18,26 @@ import java.util.regex.Pattern;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-
-    //회원찾기
-//    @Transactional(readOnly = true)
-//    public Member findByUser(String username) {
-//        Member member = userRepository.findByUsername(username).orElseGet(
-//                ()-> {return new Member();}
-//        );
-//        return member;
-//    }
-
+    private final S3Uploader s3Uploader;
 
     // 회원가입
-    public String registerUser(SignupRequestDto requestDto) {
+    public String registerUser(SignupRequestDto requestDto) throws IOException {
         String error = "";
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
         String profileImage = requestDto.getUserProfile();
-        String oauth = requestDto.getOauth();
         String passwordCheck = requestDto.getPasswordCheck();
         String nickname = requestDto.getNickname();
+        String age = requestDto.getAge();
+        String gender = requestDto.getGender();
+        String address = requestDto.getAddress();
         String pattern = "^[a-zA-Z0-9]*$";
 
         System.out.println(username);
+        System.out.println(nickname);
+        System.out.println(age);
+        System.out.println(gender);
+        System.out.println(address);
 
         // 회원 ID 중복 확인
         Optional<Member> found = userRepository.findByUsername(username);
@@ -47,7 +45,8 @@ public class UserService {
             return "중복된 id 입니다.";
         }
 
-        Optional<Member> founds = userRepository.findByNickname(nickname);
+        //이거 수정
+        Optional<String> founds = userRepository.findByNickname(nickname);
         if (founds.isPresent()) {
             return "중복된 nickname 입니다.";
         }
@@ -68,15 +67,20 @@ public class UserService {
             return "비밀번호가 일치하지 않습니다";
         }
 
-
-
         // 패스워드 인코딩
         password = passwordEncoder.encode(password);
         requestDto.setPassword(password);
 
         // 유저 정보 저장
-        Member member = new Member(username, password, profileImage, nickname);
+        Member member = new Member(username, password, profileImage, nickname, age, gender, address);
+
+        // 프로필 이미지 추가
+        if (requestDto.getUserProfileimage() != null) {
+            String profileUrl = s3Uploader.upload(requestDto.getUserProfileimage(), "profile");
+            member.setProfileImage(profileUrl);
+        }
         userRepository.save(member);
+
         return error;
     }
 

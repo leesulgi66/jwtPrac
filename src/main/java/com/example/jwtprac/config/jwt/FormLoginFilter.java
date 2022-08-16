@@ -76,7 +76,7 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .withClaim("username", userDetails.getMember().getUsername())
                 .sign(Algorithm.HMAC512("6dltmfrl"));
 
-        response.addHeader("Authorization", jwtToken);
+        response.addHeader("Authorization", "Bearer "+jwtToken);
     }
 
     //로그인 실패시 예외 처리

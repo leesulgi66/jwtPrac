@@ -3,15 +3,17 @@ package com.example.jwtprac.controller;
 import com.example.jwtprac.config.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
-import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.KakaoService;
+import com.example.jwtprac.service.S3Uploader;
 import com.example.jwtprac.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,10 +22,17 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoService kakaoService;
+    private final S3Uploader s3Uploader;
+
+    @PostMapping("/upload")
+    @ResponseBody
+    public String upload(@RequestParam("data") MultipartFile multipartFile) throws IOException {
+        return s3Uploader.upload(multipartFile, "static");
+    }
 
     // 회원 가입 요청 처리
-    @PostMapping("/user/signup")
-    public String registerUser(@Valid @RequestBody SignupRequestDto requestDto) {
+    @PostMapping("/api/user/signup")
+    public String registerUser(@Valid @RequestBody SignupRequestDto requestDto) throws IOException {
         String res = userService.registerUser(requestDto);
         if (res.equals("")) {
             return "회원가입 성공";
@@ -39,7 +48,7 @@ public class UserController {
     }
 
     //로그인 유저 정보
-    @GetMapping("user/login/auth")
+    @GetMapping("/api/login/auth")
     public LoginIdCheckDto userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);
     }
