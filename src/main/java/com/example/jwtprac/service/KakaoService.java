@@ -148,7 +148,7 @@ public class KakaoService {
             //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal UserDetailsImpl userDetails 로 정보를 꺼낼 수 있다.
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            //JWT 토큰 발급
+            //JWT 토큰 발급!
             String jwtToken = userService.JwtTokenCreate(userDetails.getMember().getUsername());
 
             response.addHeader("Authorization", jwtToken);
