@@ -4,6 +4,7 @@ import com.example.jwtprac.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;
+import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.KakaoService;
 import com.example.jwtprac.service.S3Uploader;
 import com.example.jwtprac.service.UserService;
@@ -56,7 +57,7 @@ public class UserController {
 
     //카카오 소셜 로그인
     @GetMapping("/auth/kakao/callback")
-    public @ResponseBody boolean kakaoCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
+    public @ResponseBody Member kakaoCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
         return kakaoService.requestKakao(code, response);
     }
 

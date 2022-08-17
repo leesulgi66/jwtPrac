@@ -24,6 +24,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class KakaoService {
 
 
     //카카오 사용자 로그인요청
-    public Boolean requestKakao(String code, HttpServletResponse response) {
+    public Member requestKakao(String code, HttpServletResponse response) {
         //REstTemplate을 이용해 POST방식으로 Key=value 데이터를 요청 (카카오쪽으로)
         RestTemplate rt = new RestTemplate();
 
@@ -130,7 +131,7 @@ public class KakaoService {
         if (originMember.getUsername() == null) {
             System.out.println("신규 회원입니다.");
             SignupKakaoUser(kakaoMember);
-            return false;
+            return kakaoMember;
         }
 
         // kakao 로그인 처리
@@ -151,7 +152,10 @@ public class KakaoService {
             response.addHeader("Authorization", jwtToken);
             System.out.println("JWT토큰 : " + jwtToken);
         }
-        return true;
+        Member loginMember = userRepository.findByUsername(kakaoMember.getUsername()).orElseThrow(
+                ()-> new IllegalArgumentException("카카오 사용자가 없습니다.")
+        );
+        return loginMember;
     }
 
     //신규 카카오 강제 회원가입
