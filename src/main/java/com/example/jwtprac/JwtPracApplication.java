@@ -22,5 +22,4 @@ public class JwtPracApplication {
                 .properties(APPLICATION_LOCATIONS)
                 .run(args);
     }
-
 }

@@ -1,6 +1,6 @@
 package com.example.jwtprac.service;
 
-import com.example.jwtprac.config.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.UserDetailsImpl;
 import com.example.jwtprac.model.KakaoProfile;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.model.OAuthToken;

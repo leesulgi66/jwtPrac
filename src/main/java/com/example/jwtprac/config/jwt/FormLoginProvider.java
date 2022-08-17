@@ -1,7 +1,7 @@
 package com.example.jwtprac.config.jwt;
 
-import com.example.jwtprac.config.auth.UserDetailsImpl;
-import com.example.jwtprac.config.auth.UserDetailsServiceImpl;
+import com.example.jwtprac.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

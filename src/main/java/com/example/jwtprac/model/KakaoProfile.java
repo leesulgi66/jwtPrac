@@ -2,8 +2,6 @@ package com.example.jwtprac.model;
 
 import lombok.Data;
 
-import javax.annotation.Generated;
-
 @Data
 
 public class  KakaoProfile {

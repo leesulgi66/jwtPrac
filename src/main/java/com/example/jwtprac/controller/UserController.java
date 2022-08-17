@@ -1,6 +1,6 @@
 package com.example.jwtprac.controller;
 
-import com.example.jwtprac.config.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;

@@ -16,5 +16,4 @@ public class SignupRequestDto {
     private String age;
     private String gender;
     private String address;
-
 }

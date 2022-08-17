@@ -2,7 +2,7 @@ package com.example.jwtprac.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.jwtprac.config.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;
@@ -109,6 +109,11 @@ public class UserService {
         System.out.println(address);
 
 
+        Optional<Member> found = userRepository.findByUsername(username);
+        if (found.isPresent()) {
+            return "중복된 유저 입니다.";
+        }
+
         //닉네임 중복 체크
         Optional<String> founds = userRepository.findByNickname(nickname);
         if (founds.isPresent()) {
@@ -116,8 +121,8 @@ public class UserService {
         }
 
         // 회원가입 조건
-        if (nickname.length() <= 2 || nickname.length() >= 6) {
-            return "아이디를 3-6자 이상 입력하세요";
+        if (nickname.length() < 2 || nickname.length() > 8) {
+            return "아이디를 2-8자 이상 입력하세요";
         }
 //        else if (!Pattern.matches(pattern, nickname)) {
 //            return "알파벳 대소문자와 숫자로만 입력하세요";

@@ -1,7 +1,6 @@
 package com.example.jwtprac.config;
 
 import com.example.jwtprac.config.jwt.FormLoginFilter;
-import com.example.jwtprac.config.jwt.FormLoginProvider;
 import com.example.jwtprac.config.jwt.JwtAuthorizationFilter;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final FormLoginProvider formLoginProvider;
     private final UserRepository userRepository;
 
     @Bean   // 비밀번호 암호화

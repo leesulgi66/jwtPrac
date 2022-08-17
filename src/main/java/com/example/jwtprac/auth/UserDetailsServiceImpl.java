@@ -1,4 +1,4 @@
-package com.example.jwtprac.config.auth;
+package com.example.jwtprac.auth;
 
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
