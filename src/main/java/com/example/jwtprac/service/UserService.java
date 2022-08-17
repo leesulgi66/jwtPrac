@@ -6,6 +6,8 @@ import com.example.jwtprac.auth.UserDetailsImpl;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;
+import com.example.jwtprac.exception.CustomException;
+import com.example.jwtprac.exception.ErrorCode;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,29 +49,29 @@ public class UserService {
         // 회원 ID 중복 확인
         Optional<Member> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            return "중복된 id 입니다.";
+            throw new CustomException(ErrorCode.ID_DUPLICATION_CODE);
         }
 
-        //이거 수정
+        //닉네임 중복 체크
         Optional<String> founds = userRepository.findByNickname(nickname);
         if (founds.isPresent()) {
-            return "중복된 nickname 입니다.";
+            throw new CustomException(ErrorCode.NICKNAME_DUPLICATION_CODE);
         }
 
         // 회원가입 조건
         if (username.length() < 3) {
-            return "아이디를 3자 이상 입력하세요";
+            throw new CustomException(ErrorCode.ID_LENGTH_CHECK_CODE);
         } else if (!Pattern.matches(pattern, username)) {
-            return "알파벳 대소문자와 숫자로만 입력하세요";
+            throw new CustomException(ErrorCode.ID_FORM_CHECK_CODE);
         } else if (password.length() < 3) {
-            return "비밀번호를 4자 이상 입력하세요";
+            throw new CustomException(ErrorCode.PASSWORD_LENGTH_CODE);
         } else if (password.contains(username)) {
-            return "비밀번호에 아이디를 포함할 수 없습니다.";
+            throw new CustomException(ErrorCode.PASSWORD_CONTAIN_CHECK_CODE);
         }else if (password == null) {
-            return "비밀번호를 입력해 주세요.";
+            throw new CustomException(ErrorCode.PASSWORD_NULL_CHECK_CODE);
         }
         if (!password.equals(passwordCheck)) {
-            return "비밀번호가 일치하지 않습니다";
+            throw new CustomException(ErrorCode.PASSWORD_CHECK_CODE);
         }
 
         // 패스워드 인코딩
@@ -111,18 +113,18 @@ public class UserService {
 
         Optional<Member> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            return "중복된 유저 입니다.";
+            throw new CustomException(ErrorCode.ID_DUPLICATION_CODE);
         }
 
         //닉네임 중복 체크
         Optional<String> founds = userRepository.findByNickname(nickname);
         if (founds.isPresent()) {
-            return "중복된 nickname 입니다.";
+            throw new CustomException(ErrorCode.NICKNAME_DUPLICATION_CODE);
         }
 
         // 회원가입 조건
         if (nickname.length() < 2 || nickname.length() > 8) {
-            return "아이디를 2-8자 이상 입력하세요";
+            throw new CustomException(ErrorCode.LENGTH_CHECK_CODE);
         }
 //        else if (!Pattern.matches(pattern, nickname)) {
 //            return "알파벳 대소문자와 숫자로만 입력하세요";
