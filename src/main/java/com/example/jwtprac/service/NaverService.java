@@ -1,8 +1,8 @@
 package com.example.jwtprac.service;
 
 import com.example.jwtprac.auth.UserDetailsImpl;
-import com.example.jwtprac.model.KakaoProfile;
 import com.example.jwtprac.model.Member;
+import com.example.jwtprac.model.NaverProfile;
 import com.example.jwtprac.model.OAuthToken;
 import com.example.jwtprac.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -27,16 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @RequiredArgsConstructor
 
-public class KakaoService {
+public class NaverService {
 
-    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final KakaoService kakaoService;
 
-
-    //카카오 사용자 로그인요청
-    public Member requestKakao(String code, HttpServletResponse response) {
-        //REstTemplate을 이용해 POST방식으로 Key=value 데이터를 요청 (카카오쪽으로)
+    //naver 사용자 로그인요청
+    public Member requestNaver(String code, HttpServletResponse response) {
         RestTemplate rt = new RestTemplate();
 
         //Httpheader 오브젝트 생성
@@ -47,23 +43,25 @@ public class KakaoService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         // 실제 코드를 쓸 시 아래의 값들을 변수화 해서 쓰는 것이 더 좋다.
         params.add("grant_type", "authorization_code");
-//        params.add("client_id", "ddb938f8fed6079e90564fca875e2903");
-        params.add("client_id", "811b32c1569bba53dd9f8984c4dd9ac3");
-//        params.add("redirect_uri", "http://localhost:3000/auth/kakao/callback");
-        params.add("redirect_uri", "http://localhost:8080/auth/kakao/callback");
+//        params.add("client_id", "9USIXCYT8MOvNYRxfZVs");
+        params.add("client_id", "BQlkUeINfITt7dR4S82l");
+//        params.add("client_secret", "PruusFLib3");
+        params.add("client_secret", "024u74Bg87");
+        params.add("state", "STATE");
         params.add("code", code);
 
         //HttpHeader와 HttpBdoy를 하나의 오브젝트에 담기
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = //바디와 헤더값을 넣어준다
+        HttpEntity<MultiValueMap<String, String>> naverTokenRequest = //바디와 헤더값을 넣어준다
                 new HttpEntity<>(params, headers); //아래의 exchange가 HttpEntity 오브젝트를 받게 되어있다.
 
         //Http요청하기 - Post방식으로 - 그리고 responseEntity 변수의 응답 받음.
         ResponseEntity<String> responseEntity = rt.exchange(
-                "https://kauth.kakao.com/oauth/token",
+                "https://nid.naver.com/oauth2.0/token",
                 HttpMethod.POST,
-                kakaoTokenRequest,
+                naverTokenRequest,
                 String.class
         );
+
         //Gson, Json Simple, ObjectMapper 중 하나로 json 데이터를 담는다
         ObjectMapper objectMapper = new ObjectMapper();
         OAuthToken oauthToken = null;
@@ -75,7 +73,7 @@ public class KakaoService {
             e.printStackTrace();
         }
         //엑세스 토큰만 뽑아서 확인
-        System.out.println("카카오 엑세스 토큰 : " + oauthToken.getAccess_token());
+        System.out.println("네이버 엑세스 토큰 : " + oauthToken.getAccess_token()); //oauthtoken 발급
 
         RestTemplate rt2 = new RestTemplate();
 
@@ -85,54 +83,54 @@ public class KakaoService {
         headers2.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8"); //내가 전송한 body의 내용이 key=value 임을 알림.
 
         //HttpHeader와 HttpBdoy를 하나의 오브젝트에 담기
-        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest2 = //바디와 헤더값을 넣어준다
+        HttpEntity<MultiValueMap<String, String>> naverProfileRequest2 = //바디와 헤더값을 넣어준다
                 new HttpEntity<>(headers2); //아래의 exchange가 HttpEntity 오브젝트를 받게 되어있다.
 
         //Http요청하기 - Post방식으로 - 그리고 responseEntity 변수의 응답 받음.
         //사용자 정보를 post로 요청함
         ResponseEntity<String> response2 = rt2.exchange(
-                "https://kapi.kakao.com/v2/user/me",
+                "https://openapi.naver.com/v1/nid/me",
                 HttpMethod.POST,
-                kakaoProfileRequest2,
+                naverProfileRequest2,
                 String.class
         );
+//        return response2.getBody();
 
-        //KakaoProfile오브젝트를 ObjectMapper로 담는다.
+        //naverProfile오브젝트를 ObjectMapper로 담는다.
         ObjectMapper objectMapper2 = new ObjectMapper();
-        KakaoProfile kakaoProfile = null;
+        NaverProfile naverProfile = null;
         try {
-            kakaoProfile = objectMapper2.readValue(response2.getBody(), KakaoProfile.class);
+            naverProfile = objectMapper2.readValue(response2.getBody(), NaverProfile.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
         //User 오브젝트 : username, password
-        System.out.println("카카오 닉네임 : " + kakaoProfile.getProperties().getNickname());
-        System.out.println("카카오 아이디(번호) : " + kakaoProfile.getId());
-        System.out.println("카카오 프로필 사진 : " + kakaoProfile.getProperties().getProfile_image());
-        System.out.println("클라이언트 서버 유저네임 : " + "Kakaoname" + kakaoProfile.getId());
+        System.out.println("네이버 닉네임 : " + naverProfile.getResponse().id);
+        System.out.println("네이버 e-mail : " + naverProfile.getResponse().email);
+        System.out.println("네이버 profileImage : " + naverProfile.getResponse().profile_image);
 
-        Member kakaoMember = Member.builder()
-                .socialNickname(kakaoProfile.getProperties().getNickname())
-                .username("Kakaoname" + kakaoProfile.getId())
-                .password(kakaoProfile.getId().toString()) //임시 비밀번호
-                .profileImage(kakaoProfile.getProperties().getProfile_image())
-                .oauth("kakao")
+        Member naverMember = Member.builder()
+                .socialNickname(naverProfile.getResponse().name)
+                .username(naverProfile.getResponse().id)
+                .password(naverProfile.getResponse().id) //임시 비밀번호
+                .profileImage(naverProfile.getResponse().profile_image)
+                .oauth("Naver")
                 .build();
 
         // 가입자 혹은 비가입자 체크 해서 처리
-        Member originMember = findByUser(kakaoMember.getUsername());
+        Member originMember = kakaoService.findByUser(naverMember.getUsername());
 
         if (originMember.getUsername() == null) {
             System.out.println("신규 회원입니다.");
-            SignupKakaoUser(kakaoMember); //자동 회원가입
-            return kakaoMember;
+            kakaoService.SignupKakaoUser(naverMember); //자동 회원가입
+            return naverMember;
         }
 
         // kakao 로그인 처리
-        System.out.println("kakao 로그인 진행중");
-        if (kakaoMember.getUsername() != null) {
-            Member memberEntity = userRepository.findByUsername(kakaoMember.getUsername()).orElseThrow(
+        System.out.println("naver 로그인 진행중");
+        if (naverMember.getUsername() != null) {
+            Member memberEntity = userRepository.findByUsername(naverMember.getUsername()).orElseThrow(
                     () -> new IllegalArgumentException("kakao username이 없습니다.")
             );
             UserDetailsImpl userDetails = new UserDetailsImpl(memberEntity);
@@ -146,37 +144,11 @@ public class KakaoService {
 
             response.addHeader("Authorization", jwtToken);
             System.out.println("JWT토큰 : " + jwtToken);
+
         }
-        Member loginMember = userRepository.findByUsername(kakaoMember.getUsername()).orElseThrow(
+        Member loginMember = userRepository.findByUsername(naverMember.getUsername()).orElseThrow(
                 ()-> new IllegalArgumentException("카카오 사용자가 없습니다.")
         );
         return loginMember;
-    }
-
-    //신규 카카오 강제 회원가입
-    public String SignupKakaoUser(Member kakaoMember) {
-        String error = "";
-        String username = kakaoMember.getUsername();
-        String password = kakaoMember.getPassword();
-        String profileImage = kakaoMember.getProfileImage();
-        String kakaoNickname = kakaoMember.getSocialNickname();
-        String oauth = kakaoMember.getOauth();
-
-        // 패스워드 인코딩
-        password = passwordEncoder.encode(password);
-        kakaoMember.setPassword(password);
-
-        Member member = new Member(username, password, profileImage, oauth, kakaoNickname);
-        userRepository.save(member);
-        return error;
-    }
-
-    //회원찾기
-    @Transactional(readOnly = true)
-    public Member findByUser(String username) {
-        Member member = userRepository.findByUsername(username).orElseGet(
-                ()-> {return new Member();}
-        );
-        return member;
     }
 }

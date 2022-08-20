@@ -27,7 +27,7 @@ public class Member extends Timestamped {
     @Column
     private String oauth;
     @Column
-    private String kakaoNickname;
+    private String socialNickname;
     @Column
     private String age;
     @Column
@@ -35,12 +35,12 @@ public class Member extends Timestamped {
     @Column
     private String address;
 
-    public Member(String username, String password, String profileImage, String oauth, String kakaoNickname) {
+    public Member(String username, String password, String profileImage, String oauth, String socialNickname) {
         this.username = username;
         this.password = password;
         this.profileImage = profileImage;
         this.oauth = oauth;
-        this.kakaoNickname = kakaoNickname;
+        this.socialNickname = socialNickname;
     }
 
     public Member(String username, String password, String profileImage, String nickname) {

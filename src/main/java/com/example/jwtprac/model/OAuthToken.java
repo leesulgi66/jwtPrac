@@ -11,4 +11,6 @@ public class OAuthToken {
     private String scope;
     private String id_token;
     private int refresh_token_expires_in;
+    private String error;
+    private String error_description;
 }

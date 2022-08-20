@@ -72,7 +72,7 @@ public class FormLoginFilter extends UsernamePasswordAuthenticationFilter {
         //RSA방식은 아니고 Hash암호 방식
         String jwtToken = JWT.create()
                 .withSubject("cos토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
+                .withExpiresAt(new Date(System.currentTimeMillis()+(60*1000*10)))
                 .withClaim("username", userDetails.getMember().getUsername())
                 .sign(Algorithm.HMAC512("6dltmfrl"));
 

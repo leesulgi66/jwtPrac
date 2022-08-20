@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SignupRequestDto {
     private String username;
     private String nickname;
-    private String kakaoNickname;
+    private String socialNickname;
     private String password;
     private String passwordCheck;
     private String oauth;

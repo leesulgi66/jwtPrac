@@ -6,6 +6,7 @@ import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.KakaoService;
+import com.example.jwtprac.service.NaverService;
 import com.example.jwtprac.service.S3Uploader;
 import com.example.jwtprac.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoService kakaoService;
+    private final NaverService naverService;
     private final S3Uploader s3Uploader;
 
     //S3 Test controller
@@ -59,6 +61,12 @@ public class UserController {
     @GetMapping("/auth/kakao/callback")
     public @ResponseBody Member kakaoCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
         return kakaoService.requestKakao(code, response);
+    }
+
+    //네이버 소셜 로그인
+    @GetMapping("/login/ouath2/code/naver")
+    public @ResponseBody Member naverCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
+        return naverService.requestNaver(code, response);
     }
 
     //로그인 유저 정보

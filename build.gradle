@@ -45,6 +45,8 @@ dependencies {
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.16.0'
     //aws s3
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.5.RELEASE'
+    //oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
