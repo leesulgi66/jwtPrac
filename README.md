@@ -1,1 +1,1 @@
-# jwtBasic 기본 연습입니다.
+# jwtBasic 기본기 연습입니다.
