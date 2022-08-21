@@ -59,7 +59,7 @@ public class UserController {
 
     //카카오 소셜 로그인
     @GetMapping("/auth/kakao/callback")
-    public @ResponseBody Member kakaoCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
+    public @ResponseBody Member kakaoCallback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
         return kakaoService.requestKakao(code, response);
     }
 
@@ -72,6 +72,12 @@ public class UserController {
     //로그인 유저 정보
     @GetMapping("/api/login/auth")
     public LoginIdCheckDto userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.userInfo(userDetails);
+    }
+
+    //로그인 유저 정보 권한 확인용
+    @GetMapping("/api/login/auth2")
+    public LoginIdCheckDto memberDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);
     }
 }

@@ -38,6 +38,7 @@ public class UserService {
         String age = requestDto.getAge();
         String gender = requestDto.getGender();
         String address = requestDto.getAddress();
+        String role = "ROLE_USER";
         String pattern = "^[a-zA-Z0-9]*$";
 
         System.out.println(username);
@@ -79,7 +80,7 @@ public class UserService {
         requestDto.setPassword(password);
 
         // 유저 정보 저장
-        Member member = new Member(username, password, profileImage, nickname, age, gender, address);
+        Member member = new Member(username, password, profileImage, nickname, age, gender, address, role);
 
         // 프로필 이미지 추가
         if (requestDto.getUserProfileimage() != null) {
@@ -102,6 +103,7 @@ public class UserService {
         String age = requestDto.getAge();
         String gender = requestDto.getGender();
         String address = requestDto.getAddress();
+        String role = "ROLE_USER";
         String pattern = "^[a-zA-Z0-9]*$";
 
         System.out.println(username);
@@ -135,7 +137,7 @@ public class UserService {
         requestDto.setPassword(password);
 
         // 유저 정보 저장
-        Member member = new Member(username, password, profileImage, nickname, age, gender, address);
+        Member member = new Member(username, password, profileImage, nickname, age, gender, address, role);
 
         // 프로필 이미지 추가
         if (setProfileImage != null) {

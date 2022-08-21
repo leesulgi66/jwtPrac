@@ -27,7 +27,7 @@ public class FormLoginProvider implements AuthenticationProvider {
 
         //인코딩된 암호는 시간마다 같은 값도 변경 되기 때문에 matches 함수를 이용해 비교.
         if(passwordEncoder.matches(password, userDetails.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(userDetails, null); //이미 인증이 끝났으므로 비밀번호 부분은 삭제한다.
+            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()); //이미 인증이 끝났으므로 비밀번호 부분은 삭제한다.
         }else {
             throw new BadCredentialsException("잘못된 로그인 정보입니다."); //인증 실패
         }

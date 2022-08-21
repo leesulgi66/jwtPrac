@@ -2,10 +2,12 @@ package com.example.jwtprac.auth;
 
 import com.example.jwtprac.model.Member;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -54,6 +56,9 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override // 인가를 해주는 부분
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        List<GrantedAuthority> list = new ArrayList<>();
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole());
+        list.add(grantedAuthority);
+        return list;
     }
 }

@@ -43,9 +43,9 @@ public class NaverService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         // 실제 코드를 쓸 시 아래의 값들을 변수화 해서 쓰는 것이 더 좋다.
         params.add("grant_type", "authorization_code");
-//        params.add("client_id", "9USIXCYT8MOvNYRxfZVs");
+//        params.add("client_id", "9USIXCYT8MOvNYRxfZVs"); //수
         params.add("client_id", "BQlkUeINfITt7dR4S82l");
-//        params.add("client_secret", "PruusFLib3");
+//        params.add("client_secret", "PruusFLib3"); //수
         params.add("client_secret", "024u74Bg87");
         params.add("state", "STATE");
         params.add("code", code);

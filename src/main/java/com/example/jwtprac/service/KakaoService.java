@@ -47,10 +47,10 @@ public class KakaoService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         // 실제 코드를 쓸 시 아래의 값들을 변수화 해서 쓰는 것이 더 좋다.
         params.add("grant_type", "authorization_code");
-//        params.add("client_id", "ddb938f8fed6079e90564fca875e2903");
+//        params.add("client_id", "ddb938f8fed6079e90564fca875e2903");  //수
         params.add("client_id", "811b32c1569bba53dd9f8984c4dd9ac3");
 //        params.add("redirect_uri", "http://localhost:3000/auth/kakao/callback");
-        params.add("redirect_uri", "http://localhost:8080/auth/kakao/callback");
+        params.add("redirect_uri", "http://localhost:8080/auth/kakao/callback");  //수
         params.add("code", code);
 
         //HttpHeader와 HttpBdoy를 하나의 오브젝트에 담기
@@ -167,7 +167,9 @@ public class KakaoService {
         kakaoMember.setPassword(password);
 
         Member member = new Member(username, password, profileImage, oauth, kakaoNickname);
+        member.setRole("ROLE_USER");
         userRepository.save(member);
+
         return error;
     }
 

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -51,13 +52,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().configurationSource(corsConfigurationSource());
         http.headers().frameOptions().disable(); //h2-console 보기
         http.authorizeRequests()
-
                 // api 요청 접근허용
+                .antMatchers(HttpMethod.POST,"/items").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.GET,"/api/login/auth2").access("hasRole('ADMIN')")
                 .antMatchers("/api/user/**").permitAll()
                 .antMatchers("/auth/kakao/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("**").permitAll()
                 .antMatchers("/").authenticated()
+
                 //.antMatchers(HttpMethod.GET,"/api/contents").permitAll()  //GET 요청 허용
                 //.antMatchers(HttpMethod.GET, "/api/reply/**").permitAll()
 
