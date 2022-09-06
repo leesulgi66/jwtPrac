@@ -1,10 +1,10 @@
 package com.example.jwtprac.controller;
 
-import com.example.jwtprac.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.PrincipalDetails;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
+import com.example.jwtprac.dto.SocialReponseDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;
-import com.example.jwtprac.model.Member;
 import com.example.jwtprac.service.KakaoService;
 import com.example.jwtprac.service.NaverService;
 import com.example.jwtprac.service.S3Uploader;
@@ -59,25 +59,25 @@ public class UserController {
 
     //카카오 소셜 로그인
     @GetMapping("/auth/kakao/callback")
-    public @ResponseBody Member kakaoCallback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
+    public @ResponseBody SocialReponseDto kakaoCallback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
         return kakaoService.requestKakao(code, response);
     }
 
     //네이버 소셜 로그인
     @GetMapping("/login/ouath2/code/naver")
-    public @ResponseBody Member naverCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
+    public @ResponseBody SocialReponseDto naverCalback(String code, HttpServletResponse response) {      //ResponseBody -> Data를 리턴해주는 컨트롤러 함수
         return naverService.requestNaver(code, response);
     }
 
     //로그인 유저 정보
     @GetMapping("/api/login/auth")
-    public LoginIdCheckDto userDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public LoginIdCheckDto userDetails(@AuthenticationPrincipal PrincipalDetails userDetails) {
         return userService.userInfo(userDetails);
     }
 
     //로그인 유저 정보 권한 확인용
     @GetMapping("/api/login/auth2")
-    public LoginIdCheckDto memberDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public LoginIdCheckDto memberDetails(@AuthenticationPrincipal PrincipalDetails userDetails) {
         return userService.userInfo(userDetails);
     }
 }

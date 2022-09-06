@@ -1,6 +1,7 @@
 package com.example.jwtprac.service;
 
-import com.example.jwtprac.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.PrincipalDetails;
+import com.example.jwtprac.dto.SocialReponseDto;
 import com.example.jwtprac.model.KakaoProfile;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.model.OAuthToken;
@@ -35,7 +36,7 @@ public class KakaoService {
 
 
     //카카오 사용자 로그인요청
-    public Member requestKakao(String code, HttpServletResponse response) {
+    public SocialReponseDto requestKakao(String code, HttpServletResponse response) {
         //REstTemplate을 이용해 POST방식으로 Key=value 데이터를 요청 (카카오쪽으로)
         RestTemplate rt = new RestTemplate();
 
@@ -126,7 +127,11 @@ public class KakaoService {
         if (originMember.getUsername() == null) {
             System.out.println("신규 회원입니다.");
             SignupKakaoUser(kakaoMember); //자동 회원가입
-            return kakaoMember;
+            return SocialReponseDto.builder()
+                    .username("Kakaoname" + kakaoProfile.getId())
+                    .nickname(kakaoMember.getNickname())
+                    .profileImage(kakaoMember.getProfileImage())
+                    .build();
         }
 
         // kakao 로그인 처리
@@ -135,7 +140,7 @@ public class KakaoService {
             Member memberEntity = userRepository.findByUsername(kakaoMember.getUsername()).orElseThrow(
                     () -> new IllegalArgumentException("kakao username이 없습니다.")
             );
-            UserDetailsImpl userDetails = new UserDetailsImpl(memberEntity);
+            PrincipalDetails userDetails = new PrincipalDetails(memberEntity);
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal UserDetailsImpl userDetails 로 정보를 꺼낼 수 있다.
@@ -150,7 +155,15 @@ public class KakaoService {
         Member loginMember = userRepository.findByUsername(kakaoMember.getUsername()).orElseThrow(
                 ()-> new IllegalArgumentException("카카오 사용자가 없습니다.")
         );
-        return loginMember;
+
+        return SocialReponseDto.builder()
+                .id(loginMember.getId())
+                .nickname(loginMember.getNickname())
+                .profileImage(loginMember.getProfileImage())
+                .age(loginMember.getAge())
+                .gender(loginMember.getGender())
+                .address(loginMember.getAddress())
+                .build();
     }
 
     //신규 카카오 강제 회원가입

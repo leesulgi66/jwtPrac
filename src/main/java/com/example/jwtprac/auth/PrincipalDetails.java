@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class UserDetailsImpl implements UserDetails {
+public class PrincipalDetails implements UserDetails {
 
     private final Member member;
 
-    public UserDetailsImpl(Member member) {
+    public PrincipalDetails(Member member) {
         this.member = member;
     }
 

@@ -1,6 +1,6 @@
 package com.example.jwtprac.config;
 
-import com.example.jwtprac.config.jwt.FormLoginFilter;
+import com.example.jwtprac.config.jwt.JwtAuthenticationFilter;
 import com.example.jwtprac.config.jwt.JwtAuthorizationFilter;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,11 +27,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
-
-    @Bean   // 비밀번호 암호화
-    public BCryptPasswordEncoder encodePassword() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     @Override // Bean 에 등록
@@ -53,7 +47,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable(); //h2-console 보기
         http.authorizeRequests()
                 // api 요청 접근허용
-                .antMatchers(HttpMethod.POST,"/items").access("hasRole('ADMIN')")
                 .antMatchers(HttpMethod.GET,"/api/login/auth2").access("hasRole('ADMIN')")
                 .antMatchers("/api/user/**").permitAll()
                 .antMatchers("/auth/kakao/**").permitAll()
@@ -71,8 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new FormLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), userRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
         ;
     }
 

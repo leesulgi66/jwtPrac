@@ -2,7 +2,7 @@ package com.example.jwtprac.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.jwtprac.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.PrincipalDetails;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,13 +26,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
 
+    @Value("${secret.key}")
+    private String secretKey;
+
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
         this.userRepository = userRepository;
     }
-
-    @Value("${secret.key}")
-    private String secretKey;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -59,7 +59,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     ()-> new IllegalArgumentException("username이 없습니다.")
             );
 
-            UserDetailsImpl userDetails = new UserDetailsImpl(memberEntity);
+            PrincipalDetails userDetails = new PrincipalDetails(memberEntity);
 
             //Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.
             Authentication authentication =

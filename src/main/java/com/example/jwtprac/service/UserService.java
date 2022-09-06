@@ -2,7 +2,8 @@ package com.example.jwtprac.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.jwtprac.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.PrincipalDetails;
+import com.example.jwtprac.config.jwt.JwtProperties;
 import com.example.jwtprac.dto.LoginIdCheckDto;
 import com.example.jwtprac.dto.SignupRequestDto;
 import com.example.jwtprac.dto.SocialSignupRequestDto;
@@ -11,6 +12,7 @@ import com.example.jwtprac.exception.ErrorCode;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+
+    @Value("${secret.key}")
+    private String secretKey;
 
     //일반 사용자 회원가입
     public String registerUser(SignupRequestDto requestDto) throws IOException {
@@ -152,7 +157,7 @@ public class UserService {
 
 
     //로그인 유저 정보 반환
-    public LoginIdCheckDto userInfo(UserDetailsImpl userDetails) {
+    public LoginIdCheckDto userInfo(PrincipalDetails userDetails) {
         String username = userDetails.getUsername();
         String usernickname = userDetails.getMember().getNickname();
         LoginIdCheckDto userinfo = new LoginIdCheckDto(username, usernickname);
@@ -163,9 +168,9 @@ public class UserService {
     public String JwtTokenCreate(String username){
         String jwtToken = JWT.create()
                 .withSubject("cos토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
+                .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
                 .withClaim("username", username)
-                .sign(Algorithm.HMAC512("6dltmfrl"));
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
         return jwtToken;
     }
 }

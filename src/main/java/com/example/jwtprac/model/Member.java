@@ -22,7 +22,7 @@ public class Member extends Timestamped {
     private String password;
     @Column
     private String nickname;
-    @Column
+    @Column(length = 1000)
     private String profileImage;
     @Column
     private String oauth;
