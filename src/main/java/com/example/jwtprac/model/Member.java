@@ -16,7 +16,7 @@ public class Member extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // mysql 은 identity. auto는 안 맞을 경우도 있어.
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
     @Column//(nullable = false)
     private String password;
