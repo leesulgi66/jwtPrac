@@ -1,6 +1,7 @@
 package com.example.jwtprac.service;
 
-import com.example.jwtprac.auth.UserDetailsImpl;
+import com.example.jwtprac.auth.PrincipalDetails;
+import com.example.jwtprac.dto.SocialReponseDto;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.model.NaverProfile;
 import com.example.jwtprac.model.OAuthToken;
@@ -32,7 +33,7 @@ public class NaverService {
     private final KakaoService kakaoService;
 
     //naver 사용자 로그인요청
-    public Member requestNaver(String code, HttpServletResponse response) {
+    public SocialReponseDto requestNaver(String code, HttpServletResponse response) {
         RestTemplate rt = new RestTemplate();
 
         //Httpheader 오브젝트 생성
@@ -124,7 +125,11 @@ public class NaverService {
         if (originMember.getUsername() == null) {
             System.out.println("신규 회원입니다.");
             kakaoService.SignupKakaoUser(naverMember); //자동 회원가입
-            return naverMember;
+            return SocialReponseDto.builder()
+                    .username("Navername" + naverMember.getId())
+                    .nickname(naverMember.getNickname())
+                    .profileImage(naverMember.getProfileImage())
+                    .build();
         }
 
         // kakao 로그인 처리
@@ -133,7 +138,7 @@ public class NaverService {
             Member memberEntity = userRepository.findByUsername(naverMember.getUsername()).orElseThrow(
                     () -> new IllegalArgumentException("kakao username이 없습니다.")
             );
-            UserDetailsImpl userDetails = new UserDetailsImpl(memberEntity);
+            PrincipalDetails userDetails = new PrincipalDetails(memberEntity);
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal UserDetailsImpl userDetails 로 정보를 꺼낼 수 있다.
@@ -149,6 +154,13 @@ public class NaverService {
         Member loginMember = userRepository.findByUsername(naverMember.getUsername()).orElseThrow(
                 ()-> new IllegalArgumentException("카카오 사용자가 없습니다.")
         );
-        return loginMember;
+        return SocialReponseDto.builder()
+                .id(loginMember.getId())
+                .nickname(loginMember.getNickname())
+                .profileImage(loginMember.getProfileImage())
+                .age(loginMember.getAge())
+                .gender(loginMember.getGender())
+                .address(loginMember.getAddress())
+                .build();
     }
 }
