@@ -48,20 +48,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwt = request.getHeader("Authorization")
                 .replace("Bearer ", "");
 
-        //username 꺼내기
-        String username = tokenProvider.JwtUsername(jwt);
-
         log.info("파싱된 토큰 확인해보기 : {}", jwt);
-        log.info("username 확인 해보기 : {}",tokenProvider.JwtUsername(jwt));
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) == TokenProvider.JwtCode.ACCESS) { //받아온 토큰이 유효성 검증이 완료되면
-
+            String username = tokenProvider.JwtUsername(jwt);
             Authentication authentication = tokenProvider.getAuthentication(username); //authentication 객체를 반환하고
             SecurityContextHolder.getContext().setAuthentication(authentication); //securityContextHolder에 저장해준다
             log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
         }
         else if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) == TokenProvider.JwtCode.EXPIRED){
             log.info("만료된 토큰 확인");
+            String username = tokenProvider.JwtUsername(jwt);
             String refreshToken = tokenProvider.userToken(username);
             log.info("리프레쉬 토큰 확인 : {}" , refreshToken);
             if(tokenProvider.validateToken(refreshToken) == TokenProvider.JwtCode.ACCESS) {
@@ -80,8 +77,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         chain.doFilter(request, response);
-
-
 //        ------------------------------------------------------------------------------------------------------------
 //        String username =
 //                JWT.require(Algorithm.HMAC512("6dltmfrl")).build().verify(jwtToken).getClaim("username").asString();

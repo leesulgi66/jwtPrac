@@ -17,7 +17,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
@@ -119,22 +121,12 @@ public class TokenProvider implements InitializingBean {
     }
 
     //토큰에서 usernmae 꺼내기
-    String JwtUsername(String username) {
-        //토큰을 이용해서 claim 생성
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(username)
-                .getBody();
-
-        return claims.get("username").toString();
-
-//        Base64.Decoder decoder = Base64.getDecoder();
-//        String[] jwtPayload = jwt.split("\\.");
-//        byte[] decodedBytes = decoder.decode(jwtPayload[1].getBytes());
-//        String tokenString = new String(decodedBytes);
-//        return tokenString.split(":")[1].split(",")[0].replace("\"","");
+    String JwtUsername(String jwt) {
+        Base64.Decoder decoder = Base64.getDecoder();
+        String[] jwtPayload = jwt.split("\\.");
+        byte[] decodedBytes = decoder.decode(jwtPayload[1].getBytes());
+        String tokenString = new String(decodedBytes);
+        return tokenString.split(":")[2].split(",")[0].replace("\"","");
     }
 
     String userToken(String username) {
@@ -146,6 +138,7 @@ public class TokenProvider implements InitializingBean {
     }
 
     //refresh save
+    @Transactional
     public void refreshTokneSave(Long id, String refToken){
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(id)
