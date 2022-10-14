@@ -1,7 +1,9 @@
 package com.example.jwtprac.service;
 
 import com.example.jwtprac.auth.PrincipalDetails;
+import com.example.jwtprac.config.jwt.TokenProvider;
 import com.example.jwtprac.dto.SocialReponseDto;
+import com.example.jwtprac.dto.TokenDto;
 import com.example.jwtprac.model.Member;
 import com.example.jwtprac.model.NaverProfile;
 import com.example.jwtprac.model.OAuthToken;
@@ -29,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 public class NaverService {
 
     private final UserRepository userRepository;
-    private final UserService userService;
     private final KakaoService kakaoService;
+    private final TokenProvider tokenProvider;
 
     //naver 사용자 로그인요청
     public SocialReponseDto requestNaver(String code, HttpServletResponse response) {
@@ -138,17 +140,19 @@ public class NaverService {
             Member memberEntity = userRepository.findByUsername(naverMember.getUsername()).orElseThrow(
                     () -> new IllegalArgumentException("kakao username이 없습니다.")
             );
-            PrincipalDetails userDetails = new PrincipalDetails(memberEntity);
+            PrincipalDetails principalDetailis = new PrincipalDetails(memberEntity);
             Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal UserDetailsImpl userDetails 로 정보를 꺼낼 수 있다.
+                    new UsernamePasswordAuthenticationToken(principalDetailis, null, principalDetailis.getAuthorities());
+            //홀더에 검증이 완료된 정보 값 넣어준다. -> 이제 controller 에서 @AuthenticationPrincipal principalDetailisImpl principalDetailis 로 정보를 꺼낼 수 있다.
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             //JWT 토큰 발급!
-            String jwtToken = userService.JwtTokenCreate(userDetails.getMember().getUsername());
+            TokenDto jwtToken = tokenProvider.createToken(principalDetailis.getMember().getUsername());
+            //refresh 토큰 저장
+            tokenProvider.refreshTokneSave(principalDetailis.getMember().getId(), jwtToken.getRefreshToken());
 
-            response.addHeader("Authorization", jwtToken);
-            System.out.println("JWT토큰 : " + jwtToken);
+            response.addHeader("Authorization", jwtToken.getAccessToken());
+            System.out.println("JWT토큰 : " + jwtToken.getAccessToken());
 
         }
         Member loginMember = userRepository.findByUsername(naverMember.getUsername()).orElseThrow(

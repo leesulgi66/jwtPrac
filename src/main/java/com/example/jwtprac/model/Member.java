@@ -1,6 +1,9 @@
 package com.example.jwtprac.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -18,23 +21,32 @@ public class Member extends Timestamped {
 
     @Column(nullable = false)
     private String username;
+
     @Column//(nullable = false)
     private String password;
+
     @Column
     private String nickname;
+
     @Column(length = 1000)
     private String profileImage;
+
     @Column
     private String oauth;
+
     @Column
     private String socialNickname;
+
     @Column
     private String age;
+
     @Column
     private String gender;
+
     @Column
     private String address;
 
+    @Column
     private String role;
 
     public Member(String username, String password, String profileImage, String oauth, String socialNickname) {

@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwtprac.auth.PrincipalDetails;
 import com.example.jwtprac.dto.LoginRequestDto;
+import com.example.jwtprac.dto.TokenDto;
+import com.example.jwtprac.model.RefreshToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ import java.util.Date;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final TokenProvider tokenProvider;
 
     // /login 요청을 하면 로그인 시도를 위해서 함수 실행
     @Override
@@ -81,13 +84,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrincipalDetails principalDetailis = (PrincipalDetails) authResult.getPrincipal();
 
         //JWT 토큰 발급
-        //RSA방식은 아니고 Hash암호 방식
-        String jwtToken = JWT.create()
-                .withSubject(principalDetailis.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
-                .withClaim("username", principalDetailis.getMember().getUsername())
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        TokenDto jwtToken = tokenProvider.createToken(principalDetailis.getUsername());
+        //refresh 토큰 저장
+        tokenProvider.refreshTokneSave(principalDetailis.getMember().getId(), jwtToken.getRefreshToken());
 
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken);
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken.getAccessToken());
     }
 }

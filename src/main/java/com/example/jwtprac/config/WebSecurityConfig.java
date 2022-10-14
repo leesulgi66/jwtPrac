@@ -1,9 +1,6 @@
 package com.example.jwtprac.config;
 
-import com.example.jwtprac.config.jwt.JwtAccessDeniedHandler;
-import com.example.jwtprac.config.jwt.JwtAuthenticationEntryPoint;
-import com.example.jwtprac.config.jwt.JwtAuthenticationFilter;
-import com.example.jwtprac.config.jwt.JwtAuthorizationFilter;
+import com.example.jwtprac.config.jwt.*;
 import com.example.jwtprac.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -28,6 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
@@ -67,8 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 토큰을 활용하면 세션이 필요 없으므로 STATELESS로 설정하여 Session을 사용하지 않는다.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), tokenProvider))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), tokenProvider))
 
                 //exceptionHandling을 위해 만들었던 예외처리를 등록
                 .exceptionHandling()

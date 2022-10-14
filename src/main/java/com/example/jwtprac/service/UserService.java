@@ -163,14 +163,14 @@ public class UserService {
         LoginIdCheckDto userinfo = new LoginIdCheckDto(username, usernickname);
         return userinfo;
     }
-
-    //토큰 발급
-    public String JwtTokenCreate(String username){
-        String jwtToken = JWT.create()
-                .withSubject("cos토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
-                .withClaim("username", username)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-        return jwtToken;
-    }
+//
+//    //토큰 발급
+//    public String JwtTokenCreate(String username){
+//        String jwtToken = JWT.create()
+//                .withSubject("cos토큰")
+//                .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
+//                .withClaim("username", username)
+//                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+//        return jwtToken;
+//    }
 }
